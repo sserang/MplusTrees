@@ -1,0 +1,23 @@
+Package: MplusTrees
+Type: Package
+Title: Pairs recursive partitioning with Mplus to create subgroups based on 
+        structural equation models
+Version: 0.1.2
+Author: Ross Jacobucci [aut,cre],
+        Kevin J. Grimm [ctb],
+        Sarfaraz Serang [ctb],
+        Gabriela Stegmann [ctb]
+Maintainer: Ross Jacobucci <rcjacobuc@gmail.com>
+Depends: 
+         R (>= 2.10),
+         rpart,
+         MplusAutomation,
+         snowfall,
+         nlme
+Description: The MplusTrees package uses recursive partitioning to create
+            homogenous subgroups based on structural equation models (SEM). This entails
+            specifying any form of SEM that Mplus can fit. 
+License: GPL
+Encoding: UTF-8
+RoxygenNote: 6.0.1
+LazyData: true
