@@ -2,7 +2,7 @@ Package: MplusTrees
 Type: Package
 Title: Pairs recursive partitioning with Mplus to create subgroups based on 
         structural equation models
-Version: 0.1.3
+Version: 0.1.4
 Author: Ross Jacobucci [aut,cre],
         Kevin J. Grimm [ctb],
         Sarfaraz Serang [ctb],

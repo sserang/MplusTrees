@@ -46,7 +46,8 @@ MplusTrees <- function(script,
     # larger equals worse
     evaluation <- function(y, wt, parms){
       script$rdata = data=parms[groupingFactor%in%y,]
-      fit = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+      #fit = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+      fit = try(mplusModeler(script,run=1L,modelout = "Model.1.inp"),silent=F)
       fitt=5
       list(label=fitt,deviance=-2*(fit$results$summaries$LL))
     }
@@ -82,7 +83,8 @@ MplusTrees <- function(script,
     #                                           y, ], random = randomFormula, correlation = R,
     #                na.action = na.omit)$logLik
     script$rdata = data=parms[groupingFactor%in%y,]
-     fit = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+     #fit = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+     fit = try(mplusModeler(script,run=1L,modelout = "Model.1.inp"),silent=F)
      rootDev = fit$results$summaries$LL
 
 
@@ -117,13 +119,31 @@ MplusTrees <- function(script,
           }else{
             script$rdata = parms[groupingFactor %in%
                                    yLeft, ]
-            modelLeft = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+            modelLeft = try(mplusModeler(script,run=1L,modelout = "Model.1.inp"),silent=F)
+            if(inherits(modelLeft, "try-error")) {
+              modelLeft = NA
+            }else{
+              modelLeft = modelLeft
+            }
             script$rdata = parms[groupingFactor %in%
                                    yRight, ]
-            modelRight = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+            modelRight = try(mplusModeler(script,run=1L,modelout = "Model.1.inp"),silent=F)
+            if(inherits(modelRight, "try-error")) {
+              modelRight = NA
+            }else{
+              modelRight = modelRight
+            }
           }
 
+
+          if(is.null(modelLeft$results$summaries$LL) == T|
+             is.null(modelRight$results$summaries$LL) == T){
+            dev = c(dev,-9e10)
+          }else{
             dev = c(dev, modelLeft$results$summaries$LL + modelRight$results$summaries$LL)
+          }
+
+
 
         }
       }
@@ -162,15 +182,29 @@ MplusTrees <- function(script,
           }else{
             script$rdata = parms[groupingFactor %in%
                                    yLeft, ]
-            modelLeft = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+            modelLeft = try(mplusModeler(script,run=1L,modelout = "Model.1.inp"),silent=F)
+            if(inherits(modelLeft, "try-error")) {
+              modelLeft = NA
+            }else{
+              modelLeft = modelLeft
+            }
             script$rdata = parms[groupingFactor %in%
                                    yRight, ]
-            modelRight = mplusModeler(script,run=1L,modelout = "Model.1.inp")
+            modelRight = try(mplusModeler(script,run=1L,modelout = "Model.1.inp"),silent=F)
+            if(inherits(modelRight, "try-error")) {
+              modelRight = NA
+            }else{
+              modelRight = modelRight
+            }
+
           }
 
-
-
+          if(is.null(modelLeft$results$summaries$LL) == T|
+             is.null(modelRight$results$summaries$LL) == T){
+            dev = c(dev,-9e10)
+          }else{
             dev = c(dev, modelLeft$results$summaries$LL + modelRight$results$summaries$LL)
+          }
 
         }
       }
@@ -196,8 +230,11 @@ MplusTrees <- function(script,
   }
   model <- list()
   summary <- list()
-  model.rpart = rpart(paste(groupingName,c(rPartFormula)),method=list(eval=evaluation,
-                                                                      split=split,init=initialize),control=control,data=data,parms=data)
+  model.rpart = rpart(paste(groupingName,c(rPartFormula)),
+                      method=list(eval=evaluation,
+                      split=split,init=initialize),
+                      control=control,data=data,parms=data)
+
   model$rpart_out <- model.rpart
 
   frame <- model.rpart$frame
