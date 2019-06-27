@@ -2,25 +2,62 @@
 % Please edit documentation in R/MplusTrees.R
 \name{MplusTrees}
 \alias{MplusTrees}
-\title{Mplus model recursive partitioning trees}
+\title{Recursive partitioning trees with Mplus models}
 \usage{
-MplusTrees(script, data, rPartFormula, group = ~id, parallel = FALSE,
-  control = rpart.control())
+MplusTrees(script, data, rPartFormula, catvars = NULL, group = ~id,
+  control = rpart.control(), se = F, psplit = F, palpha = 0.05)
 }
 \arguments{
-\item{script}{An MplusAutomation script file}
+\item{script}{An \code{MplusAutomation} script file}
 
 \item{data}{Dataset that is specified in the script}
 
 \item{rPartFormula}{Formula of the form ~ variable names}
 
-\item{group}{What variable is an id variable. If not specified
-an id variable is created for each row.}
+\item{catvars}{Vector of names of categorical covariates}
 
-\item{parallel}{Whether to parallelize each node (max two).}
+\item{group}{id variable. If not specified an id variable is created for each row.}
 
-\item{control}{Control object for rpart.}
+\item{control}{Control object for \code{rpart}.}
+
+\item{se}{Whether to print standard errors and \emph{p} values. In general should be set to FALSE.}
+
+\item{psplit}{Whether to use likelihood ratio \emph{p} values as a splitting criterion}
+
+\item{palpha}{Type I error rate (alpha level) for rejecting with likelihood ratio test when
+\code{psplit} set to \code{TRUE}}
 }
 \description{
-Mplus model recursive partitioning trees
+Generates recursive partitioning trees using M\emph{plus} models. \code{MplusTrees()} takes an
+M\emph{plus} model written in the form of an \code{MplusAutomation} script, uses
+\code{MplusAutomation} to fit the model in M\emph{plus}, and performs recursive partitioning
+using \code{rpart}.
+}
+\details{
+In the fitted object, \code{rpart_out} provides the tree structure, \code{terminal} gives a
+vector of terminal nodes, \code{where} shows the terminal node of each id, and \code{estimates} gives
+the parameter estimates for each terminal node.
+
+By default \code{MplusTrees()} only splits on the criteria specified in the \code{control}
+argument, the most important of which is the \code{cp} parameter. However, the user can also split on the
+\emph{p} value generated from the likelihood ratio test comparing the parent node to a multiple group
+model consisting of 2 groups (the daughter nodes). This \emph{p} value criterion is used in addition
+to the \code{cp} criterion in that both must be met for a split to be made. The \code{psplit} argument
+turns this option on, \code{palpha} sets the alpha level criterion for rejection.
+}
+\examples{
+\dontrun{
+library(lavaan)
+
+script = mplusObject(
+   TITLE = "Example #1 - Factor Model;",
+   MODEL = "f1 BY x1-x3; f2 BY x4-x6; f3 BY x7-x9;",
+   usevariables = c('x1','x2','x3','x4','x5','x6','x7','x8','x9'),
+   rdata = HolzingerSwineford1939)
+
+fit = MplusTrees(script, HolzingerSwineford1939, group=~id,
+   rPartFormula=~sex+school+grade, control=rpart.control(cp=.01))
+
+fit
+}
 }
