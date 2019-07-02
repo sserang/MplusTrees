@@ -1,7 +1,7 @@
 Package: MplusTrees
 Type: Package
 Title: Decision Trees with Structural Equation Models Fit in Mplus
-Version: 0.1.4
+Version: 0.0.1
 Author: Sarfaraz Serang [aut,cre],
 		Ross Jacobucci [aut,cre],
         Kevin J. Grimm [ctb],
